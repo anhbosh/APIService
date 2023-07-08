@@ -37,7 +37,7 @@ namespace webapi
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   policy =>
                                   {
-                                      policy.WithOrigins("http://localhost:4200", "https://happy-tree-0fdb79210.3.azurestaticapps.net").AllowAnyOrigin().AllowAnyHeader();
+                                      policy.WithOrigins("http://localhost:4200", "https://ambitious-smoke-0f2c43200.3.azurestaticapps.net").AllowAnyOrigin().AllowAnyHeader();
                                   });
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
