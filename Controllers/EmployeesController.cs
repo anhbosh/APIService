@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Bogus;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,25 +44,6 @@ namespace webapi.Controllers
             var listEmployee = testEmployees.Generate(rnd.Next(1000)).ToList();
 
             return listEmployee;
-        }
-
-        [HttpGet("config")]
-        public async Task<string> GetConfigs()
-        {
-            try
-            {
-                var secretClient = new SecretClient(new Uri(_configuration["KeyVaultConfiguration:KeyVaultURL"]),
-                                                         new DefaultAzureCredential());
-
-                var secret = await secretClient.GetSecretAsync("https://argonkeyvaultsecrect.vault.azure.net/secrets/databasepassworrd/2dbd1bf8cb444643bcdb8dad52adf9cf");
-
-                return secret.Value.ToString();
-            }
-            catch (Exception ex)
-            {
-                var e = ex;
-                return ex.Message;
-            }
         }
     }
 }
