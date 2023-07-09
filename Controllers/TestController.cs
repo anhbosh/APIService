@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -35,20 +36,24 @@ namespace webapi.Controllers
         [HttpGet("config")]
         public async Task<string> GetConfig()
         {
-            try
-            {
-                var secretClient = new SecretClient(new Uri(_configuration["KeyVaultConfiguration:KeyVaultURL"]),
-                                                         new DefaultAzureCredential());
 
-                var secret = await secretClient.GetSecretAsync("https://argonkeyvaultsecrect.vault.azure.net/secrets/databasepassworrd/2dbd1bf8cb444643bcdb8dad52adf9cf");
-
-                return secret.Value.ToString();
-            }
-            catch (Exception ex)
+            SecretClientOptions options = new SecretClientOptions()
             {
-                var e = ex;
-                return ex.Message;
-            }
+                Retry =
+                {
+                    Delay= TimeSpan.FromSeconds(2),
+                    MaxDelay = TimeSpan.FromSeconds(16),
+                    MaxRetries = 5,
+                    Mode = RetryMode.Exponential
+                 }
+            };
+            var client = new SecretClient(new Uri("https://argonkeyvaultsecrect.vault.azure.net/"), new DefaultAzureCredential(), options);
+
+            KeyVaultSecret secret = client.GetSecret("databasepassworrd");
+
+            string secretValue = secret.Value;
+
+            return secretValue;
         }
     }
 }
