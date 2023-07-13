@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Bogus.Bson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -33,8 +34,8 @@ namespace webapi.Controllers
         }
 
         // GET api/<TestController>/5
-        [HttpGet("config")]
-        public async Task<string> GetConfig()
+        [HttpGet("config/{value}")]
+        public async Task<ActionResult<string>> GetConfig(string value)
         {
 
             SecretClientOptions options = new SecretClientOptions()
@@ -47,13 +48,13 @@ namespace webapi.Controllers
                     Mode = RetryMode.Exponential
                  }
             };
-            var client = new SecretClient(new Uri("https://argonkeyvaultsecrect.vault.azure.net/"), new DefaultAzureCredential(), options);
+            var client = new SecretClient(new Uri(_configuration["KeyVaultConfiguration:KeyVaultURL"]), new DefaultAzureCredential(), options);
 
-            KeyVaultSecret secret = client.GetSecret("databasepassworrd");
+            KeyVaultSecret secret = await client.GetSecretAsync(value);
 
             string secretValue = secret.Value;
 
-            return secretValue;
+            return Ok(secretValue);
         }
     }
 }

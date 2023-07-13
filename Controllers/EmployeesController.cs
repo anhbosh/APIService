@@ -30,7 +30,7 @@ namespace webapi.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Employee>> Get()
+        public ActionResult<IEnumerable<Employee>> Get()
         {
             HttpContext.VerifyUserHasAnyAcceptedScope(scopeRequiredByApi);
 
@@ -43,7 +43,7 @@ namespace webapi.Controllers
 
             var listEmployee = testEmployees.Generate(rnd.Next(1000)).ToList();
 
-            return listEmployee;
+            return Ok(listEmployee);
         }
     }
 }
